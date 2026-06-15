@@ -1,10 +1,5 @@
 # AI_USAGE.md — AI Collaboration Log
 
-## Tool Used
-
-**Antigravity AI** (by Google DeepMind) — used as a pair programming assistant throughout the project.
-
----
 
 ## How I Used It
 
