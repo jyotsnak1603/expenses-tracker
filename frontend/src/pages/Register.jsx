@@ -24,12 +24,17 @@ export default function Register() {
       await login(formData.username, formData.password);
       navigate('/dashboard');
     } catch (err) {
-      const data = err.response?.data;
-      if (typeof data === 'object') {
-        const msg = Object.values(data).flat().join(', ');
-        setError(msg || 'Registration failed');
+      if (err.response?.data) {
+        // DRF usually returns errors as objects or lists
+        const data = err.response.data;
+        if (typeof data === 'object') {
+          const firstError = Object.values(data)[0];
+          setError(Array.isArray(firstError) ? firstError[0] : firstError);
+        } else {
+          setError(data.detail || 'Registration failed');
+        }
       } else {
-        setError('Registration failed');
+        setError(err.message || 'Network Error - Check CORS or Server Status');
       }
     } finally {
       setLoading(false);

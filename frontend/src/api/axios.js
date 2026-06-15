@@ -4,10 +4,12 @@ import axios from 'axios';
 const getBaseUrl = () => {
   if (import.meta.env.VITE_API_BASE_URL) {
     // If VITE_API_BASE_URL is just a host like 'my-app.onrender.com', format it
-    let baseUrl = import.meta.env.VITE_API_BASE_URL;
+    let baseUrl = import.meta.env.VITE_API_BASE_URL.trim();
     if (!baseUrl.startsWith('http')) {
       baseUrl = `https://${baseUrl}`;
     }
+    // Remove trailing slash to prevent double slashes before /api
+    baseUrl = baseUrl.replace(/\/+$/, '');
     return `${baseUrl}/api`;
   }
   return '/api'; // local dev proxy or relative path
@@ -37,7 +39,7 @@ api.interceptors.response.use(
       const tokens = JSON.parse(localStorage.getItem('tokens') || '{}');
       if (tokens.refresh) {
         try {
-          const res = await axios.post('/api/auth/refresh/', { refresh: tokens.refresh });
+          const res = await api.post('/auth/refresh/', { refresh: tokens.refresh });
           const newTokens = { ...tokens, access: res.data.access };
           if (res.data.refresh) newTokens.refresh = res.data.refresh;
           localStorage.setItem('tokens', JSON.stringify(newTokens));
